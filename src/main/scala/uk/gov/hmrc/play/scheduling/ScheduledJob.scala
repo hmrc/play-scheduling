@@ -14,18 +14,25 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.hello
+package uk.gov.hmrc.play.scheduling
 
-import org.scalatest.Matchers._
-import org.scalatest.WordSpecLike
+import uk.gov.hmrc.play.audit.http.HeaderCarrier
 
+import scala.concurrent.Future
+import scala.concurrent.duration.FiniteDuration
 
-class HelloWorldSpecs extends WordSpecLike {
+trait ScheduledJob {
+  def name: String
+  def execute(implicit hc: HeaderCarrier): Future[Result]
+  def isRunning: Future[Boolean]
 
-  "HelloWorld" should {
+  case class Result(message: String)
 
-    "say hello" in {
-      HelloWorld.sayHello shouldBe "hello"
-    }
-  }
+  def configKey: String = name
+
+  def initialDelay:FiniteDuration
+
+  def interval:FiniteDuration
+
+  override def toString() = s"$name after $initialDelay every $interval"
 }

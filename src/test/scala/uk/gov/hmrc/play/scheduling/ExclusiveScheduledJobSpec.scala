@@ -1,0 +1,91 @@
+/*
+ * Copyright 2015 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package uk.gov.hmrc.play.scheduling
+
+import java.util.concurrent.atomic.AtomicInteger
+import java.util.concurrent.{CountDownLatch, TimeUnit}
+
+import org.scalatest.concurrent.ScalaFutures
+import uk.gov.hmrc.play.audit.http.HeaderCarrier
+import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
+import uk.gov.hmrc.play.http.test.WithHeaderCarrier
+import uk.gov.hmrc.play.test.UnitSpec
+
+import scala.concurrent.Future
+import scala.concurrent.duration.FiniteDuration
+import scala.util.Try
+
+class ExclusiveScheduledJobSpec extends WithHeaderCarrier with UnitSpec with ScalaFutures {
+
+  class SimpleJob extends ExclusiveScheduledJob {
+
+    val start = new CountDownLatch(1)
+
+    def continueExecution() = start.countDown()
+
+    val executionCount = new AtomicInteger(0)
+
+    def executions: Int = executionCount.get()
+
+    override def executeInMutex(implicit hc: HeaderCarrier): Future[Result] = {
+      Future {
+        start.await()
+        Result(executionCount.incrementAndGet().toString)
+      }
+    }
+
+    override def name = "simpleJob"
+
+    override def initialDelay = FiniteDuration(1, TimeUnit.SECONDS)
+
+    override def interval =  FiniteDuration(1, TimeUnit.SECONDS)
+  }
+
+  "ExclusiveScheduledJob" should {
+    "let job run in sequence" in {
+      val job = new SimpleJob
+      job.continueExecution()
+      job.execute.futureValue.message shouldBe "1"
+      job.execute.futureValue.message shouldBe "2"
+    }
+
+    "not allow job to run in parallel" in {
+      val job = new SimpleJob
+
+      val pausedExecution = job.execute
+      pausedExecution.isCompleted shouldBe false
+      job.isRunning.futureValue shouldBe true
+      job.execute.futureValue.message shouldBe "Skipping execution: job running"
+      job.isRunning.futureValue shouldBe true
+
+      job.continueExecution()
+      pausedExecution.futureValue.message shouldBe "1"
+      job.isRunning.futureValue shouldBe false
+
+    }
+
+    "should tolerate exceptions in execution" in {
+      val job = new SimpleJob() {
+        override def executeInMutex(implicit hc: HeaderCarrier): Future[Result] = throw new RuntimeException
+      }
+
+      Try(job.execute.futureValue)
+
+      job.isRunning.futureValue shouldBe false
+    }
+  }
+}
