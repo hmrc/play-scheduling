@@ -22,14 +22,15 @@ import java.util.concurrent.{CountDownLatch, TimeUnit}
 import org.scalatest.concurrent.ScalaFutures
 import uk.gov.hmrc.play.audit.http.HeaderCarrier
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
-import uk.gov.hmrc.play.http.test.WithHeaderCarrier
 import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.Future
 import scala.concurrent.duration.FiniteDuration
 import scala.util.Try
 
-class ExclusiveScheduledJobSpec extends WithHeaderCarrier with UnitSpec with ScalaFutures {
+class ExclusiveScheduledJobSpec extends UnitSpec with ScalaFutures {
+
+  implicit val hc = HeaderCarrier()
 
   class SimpleJob extends ExclusiveScheduledJob {
 
