@@ -22,8 +22,7 @@ object HmrcBuild extends Build {
         Compile.httpVerbs,
         Test.scalaTest,
         Test.hmrcTest,
-        Test.pegdown,
-        Test.httpVerbsTest
+        Test.pegdown
       ),
       Developers()
     )
@@ -34,7 +33,7 @@ private object BuildDependencies {
   import _root_.play.core.PlayVersion
 
   object Compile {
-    val httpVerbs = "uk.gov.hmrc" %% "http-verbs" % "1.7.0"
+    val httpVerbs = "uk.gov.hmrc" %% "http-verbs" % "2.0.0"
     val play = "com.typesafe.play" %% "play"% PlayVersion.current % "provided"
   }
 
@@ -42,7 +41,6 @@ private object BuildDependencies {
     val scalaTest = "org.scalatest" %% "scalatest" % "2.2.4" % scope
     val pegdown = "org.pegdown" % "pegdown" % "1.5.0" % scope
     val hmrcTest = "uk.gov.hmrc" %% "hmrctest" % "1.0.0" % scope
-    val httpVerbsTest = "uk.gov.hmrc" %% "http-verbs" % "1.7.0" % scope classifier "tests"
   }
 
   object Test extends Test("test")
