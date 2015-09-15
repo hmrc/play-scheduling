@@ -16,6 +16,7 @@ object HmrcBuild extends Build {
     .enablePlugins(SbtAutoBuildPlugin, SbtGitVersioning)
     .settings(
       name := appName,
+      scalaVersion := "2.11.7",
       libraryDependencies ++= Seq(
         Compile.play,
         Compile.httpVerbs,
