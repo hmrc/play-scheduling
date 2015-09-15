@@ -16,7 +16,6 @@ object HmrcBuild extends Build {
     .enablePlugins(SbtAutoBuildPlugin, SbtGitVersioning)
     .settings(
       name := appName,
-      targetJvm := "jvm-1.7",
       libraryDependencies ++= Seq(
         Compile.play,
         Compile.httpVerbs,
