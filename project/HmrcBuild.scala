@@ -1,14 +1,11 @@
-import _root_.play.core.PlayVersion
 import sbt.Keys._
 import sbt._
 import uk.gov.hmrc.SbtAutoBuildPlugin
 import uk.gov.hmrc.versioning.SbtGitVersioning
 
-
 object HmrcBuild extends Build {
 
   import BuildDependencies._
-  import uk.gov.hmrc.DefaultBuildSettings._
 
   val appName = "play-scheduling"
 
@@ -33,7 +30,7 @@ private object BuildDependencies {
   import _root_.play.core.PlayVersion
 
   object Compile {
-    val httpVerbs = "uk.gov.hmrc" %% "http-verbs" % "2.2.2" % "provided"
+    val httpVerbs = "uk.gov.hmrc" %% "http-verbs" % "3.0.0" % "provided"
     val play = "com.typesafe.play" %% "play"% PlayVersion.current % "provided"
   }
 

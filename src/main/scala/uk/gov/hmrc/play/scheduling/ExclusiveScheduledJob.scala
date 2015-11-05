@@ -18,7 +18,7 @@ package uk.gov.hmrc.play.scheduling
 
 import java.util.concurrent.Semaphore
 
-import uk.gov.hmrc.play.audit.http.HeaderCarrier
+import uk.gov.hmrc.play.http.HeaderCarrier
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
 import scala.concurrent.Future

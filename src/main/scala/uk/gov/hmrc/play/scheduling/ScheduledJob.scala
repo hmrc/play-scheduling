@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.play.scheduling
 
-import uk.gov.hmrc.play.audit.http.HeaderCarrier
+import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
 import scala.concurrent.duration.FiniteDuration

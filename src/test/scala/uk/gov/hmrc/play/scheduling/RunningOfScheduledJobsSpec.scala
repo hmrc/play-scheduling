@@ -20,7 +20,7 @@ import akka.actor.{Cancellable, Scheduler}
 import org.scalatest.concurrent.Eventually
 import play.api.Application
 import play.api.test.FakeApplication
-import uk.gov.hmrc.play.audit.http.HeaderCarrier
+import uk.gov.hmrc.play.http.HeaderCarrier
 import uk.gov.hmrc.play.test.{DelayProcessing, UnitSpec}
 
 import scala.concurrent.ExecutionContext.Implicits.global
