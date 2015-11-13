@@ -20,7 +20,6 @@ import akka.actor.{Cancellable, Scheduler}
 import org.scalatest.concurrent.Eventually
 import play.api.Application
 import play.api.test.FakeApplication
-import uk.gov.hmrc.play.http.HeaderCarrier
 import uk.gov.hmrc.play.test.{DelayProcessing, UnitSpec}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -67,7 +66,7 @@ class RunningOfScheduledJobsSpec extends UnitSpec with Eventually with DelayProc
       var capturedRunnable: Runnable = _
       override val testScheduledJob = new TestScheduledJob {
         var executed = false
-        override def execute(implicit hc: HeaderCarrier) = {
+        override def execute(implicit ec: ExecutionContext ) = {
           executed = true
           Future.successful(this.Result("done"))
         }
@@ -128,7 +127,7 @@ class RunningOfScheduledJobsSpec extends UnitSpec with Eventually with DelayProc
       override lazy val interval: FiniteDuration = 3.seconds
       def name = "TestScheduledJob"
 
-      def execute(implicit hc: HeaderCarrier) = Future.successful(Result("done"))
+      def execute(implicit ec: ExecutionContext) = Future.successful(Result("done"))
       var isRunning: Future[Boolean] = Future.successful(false)
     }
     val testScheduledJob = new TestScheduledJob

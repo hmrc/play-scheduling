@@ -16,7 +16,6 @@ object HmrcBuild extends Build {
       scalaVersion := "2.11.7",
       libraryDependencies ++= Seq(
         Compile.play,
-        Compile.httpVerbs,
         Test.scalaTest,
         Test.hmrcTest,
         Test.pegdown
@@ -30,7 +29,6 @@ private object BuildDependencies {
   import _root_.play.core.PlayVersion
 
   object Compile {
-    val httpVerbs = "uk.gov.hmrc" %% "http-verbs" % "3.0.0" % "provided"
     val play = "com.typesafe.play" %% "play"% PlayVersion.current % "provided"
   }
 
