@@ -18,17 +18,14 @@ package uk.gov.hmrc.play.scheduling
 
 import java.util.concurrent.Semaphore
 
-import uk.gov.hmrc.play.http.HeaderCarrier
-import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
-
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success, Try}
 
 trait ExclusiveScheduledJob extends ScheduledJob {
 
-  def executeInMutex(implicit hc: HeaderCarrier): Future[this.Result]
+  def executeInMutex(implicit ec: ExecutionContext): Future[this.Result]
 
-  final def execute(implicit hc: HeaderCarrier):Future[Result] =
+  final def execute(implicit ec: ExecutionContext):Future[Result] =
     if (mutex.tryAcquire()) {
       Try(executeInMutex) match {
         case Success(f) => f andThen { case _ => mutex.release() }

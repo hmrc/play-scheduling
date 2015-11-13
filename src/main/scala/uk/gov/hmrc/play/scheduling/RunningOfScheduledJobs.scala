@@ -20,8 +20,6 @@ import akka.actor.{Cancellable, Scheduler}
 import org.apache.commons.lang3.time.StopWatch
 import play.api.libs.concurrent.Akka
 import play.api.{Application, GlobalSettings, Logger}
-import uk.gov.hmrc.play.http.HeaderCarrier
-import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 import scala.concurrent.Await
 import scala.concurrent.duration._
 import scala.util.{Failure, Success}
@@ -35,7 +33,7 @@ trait RunningOfScheduledJobs extends GlobalSettings {
   override def onStart(app: Application) {
     super.onStart(app)
 
-    implicit val hc = HeaderCarrier()
+    implicit val ec = play.api.libs.concurrent.Execution.defaultContext
 
     Logger.info(s"Scheduling jobs: $scheduledJobs")
     cancellables = scheduledJobs.map { job =>
@@ -44,7 +42,7 @@ trait RunningOfScheduledJobs extends GlobalSettings {
         stopWatch.start()
         Logger.info(s"Executing job ${job.name}")
 
-        job.execute(hc).onComplete {
+        job.execute.onComplete {
           case Success(job.Result(message)) =>
             stopWatch.stop()
             Logger.info(s"Completed job ${job.name} in $stopWatch: $message")

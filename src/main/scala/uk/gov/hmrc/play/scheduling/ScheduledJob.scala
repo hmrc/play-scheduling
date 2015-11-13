@@ -16,14 +16,12 @@
 
 package uk.gov.hmrc.play.scheduling
 
-import uk.gov.hmrc.play.http.HeaderCarrier
-
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.duration.FiniteDuration
 
 trait ScheduledJob {
   def name: String
-  def execute(implicit hc: HeaderCarrier): Future[Result]
+  def execute(implicit ec: ExecutionContext): Future[Result]
   def isRunning: Future[Boolean]
 
   case class Result(message: String)

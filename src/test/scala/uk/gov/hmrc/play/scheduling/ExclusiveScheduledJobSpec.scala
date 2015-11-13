@@ -20,17 +20,14 @@ import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.{CountDownLatch, TimeUnit}
 
 import org.scalatest.concurrent.ScalaFutures
-import uk.gov.hmrc.play.http.HeaderCarrier
-import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 import uk.gov.hmrc.play.test.UnitSpec
 
-import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits._
+import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.duration.FiniteDuration
 import scala.util.Try
 
 class ExclusiveScheduledJobSpec extends UnitSpec with ScalaFutures {
-
-  implicit val hc = HeaderCarrier()
 
   class SimpleJob extends ExclusiveScheduledJob {
 
@@ -42,7 +39,7 @@ class ExclusiveScheduledJobSpec extends UnitSpec with ScalaFutures {
 
     def executions: Int = executionCount.get()
 
-    override def executeInMutex(implicit hc: HeaderCarrier): Future[Result] = {
+    override def executeInMutex(implicit ec: ExecutionContext): Future[Result] = {
       Future {
         start.await()
         Result(executionCount.incrementAndGet().toString)
@@ -81,7 +78,7 @@ class ExclusiveScheduledJobSpec extends UnitSpec with ScalaFutures {
 
     "should tolerate exceptions in execution" in {
       val job = new SimpleJob() {
-        override def executeInMutex(implicit hc: HeaderCarrier): Future[Result] = throw new RuntimeException
+        override def executeInMutex(implicit ec: ExecutionContext): Future[Result] = throw new RuntimeException
       }
 
       Try(job.execute.futureValue)
