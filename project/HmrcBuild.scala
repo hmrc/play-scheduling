@@ -1,11 +1,10 @@
+import play.core.PlayVersion
 import sbt.Keys._
 import sbt._
 import uk.gov.hmrc.SbtAutoBuildPlugin
 import uk.gov.hmrc.versioning.SbtGitVersioning
 
 object HmrcBuild extends Build {
-
-  import BuildDependencies._
 
   val appName = "play-scheduling"
 
@@ -15,33 +14,11 @@ object HmrcBuild extends Build {
       name := appName,
       scalaVersion := "2.11.7",
       libraryDependencies ++= Seq(
-        Compile.play,
-        Test.scalaTest,
-        Test.hmrcTest,
-        Test.pegdown
+        "com.typesafe.play" %% "play"      % PlayVersion.current % "provided",
+        "org.scalatest"     %% "scalatest" % "2.2.4"             % "test",
+        "org.pegdown"       %  "pegdown"   % "1.6.0"             % "test",
+        "uk.gov.hmrc"       %% "hmrctest"  % "2.1.0"             % "test"
       ),
-      Developers()
+      developers := List.empty[Developer]
     )
-}
-
-private object BuildDependencies {
-
-  import _root_.play.core.PlayVersion
-
-  object Compile {
-    val play = "com.typesafe.play" %% "play"% PlayVersion.current % "provided"
-  }
-
-  sealed abstract class Test(scope: String) {
-    val scalaTest = "org.scalatest" %% "scalatest" % "2.2.4" % scope
-    val pegdown = "org.pegdown" % "pegdown" % "1.5.0" % scope
-    val hmrcTest = "uk.gov.hmrc" %% "hmrctest" % "1.4.0" % scope
-  }
-
-  object Test extends Test("test")
-
-}
-object Developers {
-
-  def apply() = developers := List[Developer]()
 }
