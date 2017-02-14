@@ -16,21 +16,11 @@
 
 package uk.gov.hmrc.play.scheduling
 
-import scala.concurrent.{ExecutionContext, Future}
-import scala.concurrent.duration.FiniteDuration
+import com.google.inject.AbstractModule
 
-trait ScheduledJob {
-  def name: String
-  def execute(implicit ec: ExecutionContext): Future[Result]
-  def isRunning: Future[Boolean]
-
-  case class Result(message: String)
-
-  def configKey: String = name
-
-  def initialDelay:FiniteDuration
-
-  def interval:FiniteDuration
-
-  override def toString() = s"$name after $initialDelay every $interval"
+/**
+  * Created by william on 14/02/17.
+  */
+class SchedulingModule extends AbstractModule {
+  override def configure(): Unit = bind(classOf[JobExecutor]) to classOf[DefaultJobExecutor]
 }
