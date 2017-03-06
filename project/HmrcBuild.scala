@@ -17,7 +17,7 @@ object HmrcBuild extends Build {
         "com.typesafe.play" %% "play"      % PlayVersion.current % "provided",
         "org.scalatest"     %% "scalatest" % "2.2.4"             % "test",
         "org.pegdown"       %  "pegdown"   % "1.6.0"             % "test",
-        "uk.gov.hmrc"       %% "hmrctest"  % "2.1.0"             % "test"
+        "uk.gov.hmrc"       %% "hmrctest"  % "2.3.0"             % "test"
       ),
       developers := List.empty[Developer]
     )
