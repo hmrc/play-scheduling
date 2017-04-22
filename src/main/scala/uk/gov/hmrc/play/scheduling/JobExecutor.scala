@@ -17,26 +17,38 @@
 package uk.gov.hmrc.play.scheduling
 
 import akka.actor.{Cancellable, Scheduler}
+import com.google.inject.Inject
 import org.apache.commons.lang3.time.StopWatch
-import play.api.{Application, GlobalSettings, Logger}
-import scala.concurrent.Await
+import play.api.{Application, Logger}
+import play.api.inject.ApplicationLifecycle
+
+import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
 import scala.util.{Failure, Success}
 
-trait RunningOfScheduledJobs extends GlobalSettings {
-  def scheduler(app: Application): Scheduler = app.actorSystem.scheduler
-  val scheduledJobs: Seq[ScheduledJob]
+/**
+  * Created by william on 13/02/17.
+  */
+trait JobExecutor {
 
-  private[scheduling] var cancellables : Seq[Cancellable] = Seq.empty
+  def scheduler: Scheduler
 
-  override def onStart(app: Application) {
-    super.onStart(app)
+  def scheduleJobs(jobs: Seq[ScheduledJob]): Seq[Cancellable]
 
+  def stopJobs(jobs: Seq[ScheduledJob], cancellables: Seq[Cancellable]): Boolean
+
+}
+
+class DefaultJobExecutor @Inject()(app: Application, lifecycle: ApplicationLifecycle) extends JobExecutor {
+
+  def scheduler = app.actorSystem.scheduler
+
+  def scheduleJobs(jobs: Seq[ScheduledJob]): Seq[Cancellable] = {
     implicit val ec = play.api.libs.concurrent.Execution.defaultContext
 
-    Logger.info(s"Scheduling jobs: $scheduledJobs")
-    cancellables = scheduledJobs.map { job =>
-      scheduler(app).schedule(job.initialDelay, job.interval) {
+    Logger.info(s"Scheduling jobs: $jobs")
+    val cancellables = jobs.map { job =>
+      scheduler.schedule(job.initialDelay, job.interval) {
         val stopWatch = new StopWatch
         stopWatch.start()
         Logger.info(s"Executing job ${job.name}")
@@ -51,12 +63,17 @@ trait RunningOfScheduledJobs extends GlobalSettings {
         }
       }
     }
+
+    lifecycle.addStopHook {
+      () => Future.successful(stopJobs(jobs, cancellables))
+    }
+    cancellables
   }
 
-  override def onStop(app: Application) {
+  def stopJobs(jobs: Seq[ScheduledJob], cancellables: Seq[Cancellable]): Boolean = {
     Logger.info(s"Cancelling all scheduled jobs.")
     cancellables.foreach(_.cancel())
-    scheduledJobs.foreach { job =>
+    jobs.foreach { job =>
       Logger.info(s"Checking if job ${job.configKey} is running")
       while(Await.result(job.isRunning, 5.seconds)) {
         Logger.warn(s"Waiting for job ${job.configKey} to finish")
@@ -64,5 +81,7 @@ trait RunningOfScheduledJobs extends GlobalSettings {
       }
       Logger.warn(s"Job ${job.configKey} is finished")
     }
+    cancellables.forall(_.isCancelled)
   }
+
 }
