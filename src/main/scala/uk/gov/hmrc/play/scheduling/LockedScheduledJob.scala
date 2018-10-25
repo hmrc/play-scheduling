@@ -28,20 +28,22 @@ trait LockedScheduledJob extends ScheduledJob with MongoDbConnection {
 
   lazy val lockRepository = new LockRepository
 
-  lazy val exclusiveTimePeriodLock: LockKeeper = new LockKeeper {
+  lazy val lockKeeper = new LockKeeper {
     val repo = lockRepository
     val lockId = s"$name-scheduled-job-lock"
     val forceLockReleaseAfter: Duration = new Duration(interval.toMillis)
   }
 
+  def isRunning: Future[Boolean] = lockKeeper.isLocked
+
   def executeInLock(implicit ec: ExecutionContext): Future[this.Result]
 
   final def execute(implicit ec: ExecutionContext): Future[Result] =
-    exclusiveTimePeriodLock.tryLock { 
+    lockKeeper.tryLock {
       executeInLock
     } map { 
-      case Some(res) => Result(s"Job with $name run and completed with result $res")
-      case None => Result(s"Job with $name not cannot aquire mongo lock, not running")
+      case Some(Result(msg)) => Result(s"Job with $name run and completed with result $msg")
+      case None => Result(s"Job with $name cannot aquire mongo lock, not running")
     }
 
 }

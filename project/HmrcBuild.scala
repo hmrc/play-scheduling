@@ -20,12 +20,13 @@ object HmrcBuild extends Build {
       name := appName,
       scalaVersion := "2.11.7",
       libraryDependencies ++= Seq(
-        "uk.gov.hmrc"       %% "mongo-lock"         % "5.1.0",
-        "uk.gov.hmrc"       %% "play-reactivemongo" % "6.2.0",
-        "com.typesafe.play" %% "play"               % PlayVersion.current % "provided",
-        "org.scalatest"     %% "scalatest"          % "2.2.4"             % "test",
-        "org.pegdown"       %  "pegdown"            % "1.6.0"             % "test",
-        "uk.gov.hmrc"       %% "hmrctest"           % "2.3.0"             % "test"
+        "uk.gov.hmrc"       %% "mongo-lock"              % "5.1.0",
+        "uk.gov.hmrc"       %% "play-reactivemongo"      % "6.2.0",
+        "com.typesafe.play" %% "play"                    % PlayVersion.current % "provided",
+        "org.scalatest"     %% "scalatest"               % "2.2.4"             % "test",
+        "org.pegdown"       %  "pegdown"                 % "1.6.0"             % "test",
+        "uk.gov.hmrc"       %% "hmrctest"                % "2.3.0"             % "test",
+        "org.scalatestplus.play" %% "scalatestplus-play" % "2.0.1"             % "test"
       ),
       developers := List.empty[Developer]
     )
