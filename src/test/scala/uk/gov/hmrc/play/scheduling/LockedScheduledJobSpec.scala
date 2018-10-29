@@ -35,6 +35,7 @@ import scala.concurrent.ExecutionContext.Implicits._
 import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future, Await}
 import scala.util.Try
+import org.joda.time.Duration
 
 class LockedScheduledJobSpec extends UnitSpec with ScalaFutures with GuiceOneAppPerTest with BeforeAndAfterEach {
 
@@ -43,6 +44,8 @@ class LockedScheduledJobSpec extends UnitSpec with ScalaFutures with GuiceOneApp
     .build()
 
   class SimpleJob(val name: String) extends LockedScheduledJob {
+
+    override val releaseLockAfter = new Duration(1000)
 
     val start = new CountDownLatch(1)
 

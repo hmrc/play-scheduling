@@ -22,21 +22,22 @@ import uk.gov.hmrc.lock.LockRepository
 import uk.gov.hmrc.lock.LockKeeper
 
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.{Failure, Success, Try}
 
 trait LockedScheduledJob extends ScheduledJob with MongoDbConnection {
+
+  def executeInLock(implicit ec: ExecutionContext): Future[this.Result]
+
+  val releaseLockAfter: Duration
 
   lazy val lockRepository = new LockRepository
 
   lazy val lockKeeper = new LockKeeper {
     val repo = lockRepository
     val lockId = s"$name-scheduled-job-lock"
-    val forceLockReleaseAfter: Duration = new Duration(interval.toMillis)
+    val forceLockReleaseAfter: Duration = releaseLockAfter
   }
 
   def isRunning: Future[Boolean] = lockKeeper.isLocked
-
-  def executeInLock(implicit ec: ExecutionContext): Future[this.Result]
 
   final def execute(implicit ec: ExecutionContext): Future[Result] =
     lockKeeper.tryLock {
