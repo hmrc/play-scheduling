@@ -23,13 +23,13 @@ import uk.gov.hmrc.lock.LockKeeper
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait LockedScheduledJob extends ScheduledJob with MongoDbConnection {
+trait LockedScheduledJob extends ScheduledJob {
 
   def executeInLock(implicit ec: ExecutionContext): Future[this.Result]
 
   val releaseLockAfter: Duration
 
-  lazy val lockRepository = new LockRepository
+  val lockRepository: LockRepository
 
   lazy val lockKeeper = new LockKeeper {
     val repo = lockRepository

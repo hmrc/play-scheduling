@@ -45,9 +45,13 @@ class LockedScheduledJobSpec extends UnitSpec with ScalaFutures with GuiceOneApp
 
   class SimpleJob(val name: String) extends LockedScheduledJob {
 
+    protected lazy val mongoConnection = new MongoDbConnection {}
+    protected implicit lazy val db = mongoConnection.db
     override val releaseLockAfter = new Duration(1000)
 
     val start = new CountDownLatch(1)
+
+    val lockRepository = new  LockRepository()
 
     def continueExecution() = start.countDown()
 
