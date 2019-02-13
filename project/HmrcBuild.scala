@@ -14,20 +14,18 @@ object HmrcBuild extends Build {
 
   lazy val PlayScheduling = (project in file("."))
     .enablePlugins(SbtAutoBuildPlugin, SbtGitVersioning, SbtArtifactory)
-    .settings(majorVersion := 5)
+    .settings(majorVersion := 6)
     .settings(makePublicallyAvailableOnBintray := true)
     .settings(
       name := appName,
-      scalaVersion := "2.11.7",
+      scalaVersion := "2.11.12",
       libraryDependencies ++= Seq(
-        "uk.gov.hmrc"       %% "mongo-lock"              % "5.1.1",
-        "uk.gov.hmrc"       %% "play-reactivemongo"      % "6.2.0",
+        "uk.gov.hmrc"       %% "mongo-lock"              % "6.10.0-play-25",
         "com.typesafe.play" %% "play"                    % PlayVersion.current % "provided",
-        "org.scalatest"     %% "scalatest"               % "2.2.4"             % "test",
+        "org.scalatest"     %% "scalatest"               % "3.0.5"             % "test",
         "org.pegdown"       %  "pegdown"                 % "1.6.0"             % "test",
-        "uk.gov.hmrc"       %% "hmrctest"                % "2.3.0"             % "test",
+        "ch.qos.logback"    % "logback-classic"          % "1.2.3"             % "test",
         "org.scalatestplus.play" %% "scalatestplus-play" % "2.0.1"             % "test"
-      ),
-      developers := List.empty[Developer]
+      )
     )
 }

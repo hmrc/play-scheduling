@@ -17,10 +17,7 @@
 package uk.gov.hmrc.play.scheduling
 
 import org.joda.time.Duration
-import play.modules.reactivemongo.MongoDbConnection
-import uk.gov.hmrc.lock.LockRepository
-import uk.gov.hmrc.lock.LockKeeper
-
+import uk.gov.hmrc.lock.{LockKeeper, LockRepository}
 import scala.concurrent.{ExecutionContext, Future}
 
 trait LockedScheduledJob extends ScheduledJob {

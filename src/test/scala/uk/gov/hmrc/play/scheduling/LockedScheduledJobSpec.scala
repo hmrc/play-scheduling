@@ -18,26 +18,20 @@ package uk.gov.hmrc.play.scheduling
 
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.{CountDownLatch, TimeUnit}
-
-import org.scalatest.BeforeAndAfterEach
+import org.joda.time.Duration
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatestplus.play.guice.GuiceOneAppPerTest 
-import uk.gov.hmrc.lock.LockRepository
-import uk.gov.hmrc.play.test.UnitSpec
-
-import play.api.libs.json.Json
+import org.scalatest.{BeforeAndAfterEach, Matchers, WordSpec}
+import org.scalatestplus.play.guice.GuiceOneAppPerTest
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.modules.reactivemongo.MongoDbConnection
-import reactivemongo.play.json.ImplicitBSONHandlers._
-import reactivemongo.api.collections.bson.BSONCollection
+import uk.gov.hmrc.lock.LockRepository
 import scala.concurrent.ExecutionContext.Implicits._
 import scala.concurrent.duration._
-import scala.concurrent.{ExecutionContext, Future, Await}
+import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.util.Try
-import org.joda.time.Duration
 
-class LockedScheduledJobSpec extends UnitSpec with ScalaFutures with GuiceOneAppPerTest with BeforeAndAfterEach {
+class LockedScheduledJobSpec extends WordSpec with Matchers with ScalaFutures with GuiceOneAppPerTest with BeforeAndAfterEach {
 
   override def fakeApplication(): Application = new GuiceApplicationBuilder()
     .configure("mongodb.uri" -> "mongodb://localhost:27017/test-play-schedule")

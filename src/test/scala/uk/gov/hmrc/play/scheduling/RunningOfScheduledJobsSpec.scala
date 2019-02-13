@@ -18,15 +18,14 @@ package uk.gov.hmrc.play.scheduling
 
 import akka.actor.{Cancellable, Scheduler}
 import org.scalatest.concurrent.Eventually
+import org.scalatest.{Matchers, WordSpec}
 import play.api.Application
 import play.api.test.FakeApplication
-import uk.gov.hmrc.play.test.{DelayProcessing, UnitSpec}
-
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}
 
-class RunningOfScheduledJobsSpec extends UnitSpec with Eventually with DelayProcessing {
+class RunningOfScheduledJobsSpec extends WordSpec with Matchers with Eventually {
 
   "When starting the app, the scheduled job runner" should {
 
@@ -108,7 +107,10 @@ class RunningOfScheduledJobsSpec extends UnitSpec with Eventually with DelayProc
         runner.onStop(FakeApplication())
       }
 
-      fixedDelay(5000)
+      val deadline: Deadline = 5000.milliseconds.fromNow
+      while (deadline.hasTimeLeft()) {
+        /* Intentionally burning CPU cycles for fixed period */
+      }
 
       stopFuture should not be 'completed
       testScheduledJob.isRunning = Future.successful(false)

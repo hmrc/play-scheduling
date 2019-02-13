@@ -18,16 +18,14 @@ package uk.gov.hmrc.play.scheduling
 
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.{CountDownLatch, TimeUnit}
-
 import org.scalatest.concurrent.ScalaFutures
-import uk.gov.hmrc.play.test.UnitSpec
-
+import org.scalatest.{Matchers, WordSpec}
 import scala.concurrent.ExecutionContext.Implicits._
-import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.duration.FiniteDuration
+import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
 
-class ExclusiveScheduledJobSpec extends UnitSpec with ScalaFutures {
+class ExclusiveScheduledJobSpec extends WordSpec with Matchers with ScalaFutures {
 
   class SimpleJob extends ExclusiveScheduledJob {
 
