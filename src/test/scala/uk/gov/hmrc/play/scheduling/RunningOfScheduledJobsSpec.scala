@@ -27,6 +27,9 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class RunningOfScheduledJobsSpec extends WordSpec with Matchers with Eventually {
 
+  override implicit val patienceConfig: PatienceConfig =
+    PatienceConfig(timeout = 5.seconds)
+
   "When starting the app, the scheduled job runner" should {
 
     "do nothing if there are no scheduled jobs configured" in new TestCase {
