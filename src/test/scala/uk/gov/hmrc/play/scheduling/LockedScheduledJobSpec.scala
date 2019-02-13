@@ -31,21 +31,27 @@ import scala.concurrent.duration._
 import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.util.Try
 
-class LockedScheduledJobSpec extends WordSpec with Matchers with ScalaFutures with GuiceOneAppPerTest with BeforeAndAfterEach {
+class LockedScheduledJobSpec
+    extends WordSpec
+    with Matchers
+    with ScalaFutures
+    with GuiceOneAppPerTest
+    with BeforeAndAfterEach {
 
-  override def fakeApplication(): Application = new GuiceApplicationBuilder()
-    .configure("mongodb.uri" -> "mongodb://localhost:27017/test-play-schedule")
-    .build()
+  override def fakeApplication(): Application =
+    new GuiceApplicationBuilder()
+      .configure("mongodb.uri" -> "mongodb://localhost:27017/test-play-schedule")
+      .build()
 
   class SimpleJob(val name: String) extends LockedScheduledJob {
 
     protected lazy val mongoConnection = new MongoDbConnection {}
-    protected implicit lazy val db = mongoConnection.db
-    override val releaseLockAfter = new Duration(1000)
+    protected implicit lazy val db     = mongoConnection.db
+    override val releaseLockAfter      = new Duration(1000)
 
     val start = new CountDownLatch(1)
 
-    val lockRepository = new  LockRepository()
+    val lockRepository = new LockRepository()
 
     def continueExecution() = start.countDown()
 
@@ -53,16 +59,15 @@ class LockedScheduledJobSpec extends WordSpec with Matchers with ScalaFutures wi
 
     def executions: Int = executionCount.get()
 
-    override def executeInLock(implicit ec: ExecutionContext): Future[Result] = {
+    override def executeInLock(implicit ec: ExecutionContext): Future[Result] =
       Future {
         start.await()
         Result(executionCount.incrementAndGet().toString)
       }
-    }
 
     override def initialDelay = FiniteDuration(1, TimeUnit.SECONDS)
 
-    override def interval =  FiniteDuration(1, TimeUnit.SECONDS)
+    override def interval = FiniteDuration(1, TimeUnit.SECONDS)
   }
 
   "ExclusiveScheduledJob" should {
@@ -78,14 +83,14 @@ class LockedScheduledJobSpec extends WordSpec with Matchers with ScalaFutures wi
       val job = new SimpleJob("job2")
 
       val pausedExecution = job.execute
-      pausedExecution.isCompleted shouldBe false
-      job.isRunning.futureValue shouldBe true
+      pausedExecution.isCompleted     shouldBe false
+      job.isRunning.futureValue       shouldBe true
       job.execute.futureValue.message shouldBe "Job with job2 cannot aquire mongo lock, not running"
-      job.isRunning.futureValue shouldBe true
+      job.isRunning.futureValue       shouldBe true
 
       job.continueExecution()
       pausedExecution.futureValue.message shouldBe "Job with job2 run and completed with result 1"
-      job.isRunning.futureValue shouldBe false
+      job.isRunning.futureValue           shouldBe false
     }
 
     "should tolerate exceptions in execution" in {

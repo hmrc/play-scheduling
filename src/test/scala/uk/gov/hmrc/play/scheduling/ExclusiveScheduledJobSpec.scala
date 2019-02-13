@@ -37,18 +37,17 @@ class ExclusiveScheduledJobSpec extends WordSpec with Matchers with ScalaFutures
 
     def executions: Int = executionCount.get()
 
-    override def executeInMutex(implicit ec: ExecutionContext): Future[Result] = {
+    override def executeInMutex(implicit ec: ExecutionContext): Future[Result] =
       Future {
         start.await()
         Result(executionCount.incrementAndGet().toString)
       }
-    }
 
     override def name = "simpleJob"
 
     override def initialDelay = FiniteDuration(1, TimeUnit.SECONDS)
 
-    override def interval =  FiniteDuration(1, TimeUnit.SECONDS)
+    override def interval = FiniteDuration(1, TimeUnit.SECONDS)
   }
 
   "ExclusiveScheduledJob" should {
@@ -63,14 +62,14 @@ class ExclusiveScheduledJobSpec extends WordSpec with Matchers with ScalaFutures
       val job = new SimpleJob
 
       val pausedExecution = job.execute
-      pausedExecution.isCompleted shouldBe false
-      job.isRunning.futureValue shouldBe true
+      pausedExecution.isCompleted     shouldBe false
+      job.isRunning.futureValue       shouldBe true
       job.execute.futureValue.message shouldBe "Skipping execution: job running"
-      job.isRunning.futureValue shouldBe true
+      job.isRunning.futureValue       shouldBe true
 
       job.continueExecution()
       pausedExecution.futureValue.message shouldBe "1"
-      job.isRunning.futureValue shouldBe false
+      job.isRunning.futureValue           shouldBe false
 
     }
 

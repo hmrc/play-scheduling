@@ -28,7 +28,7 @@ trait RunningOfScheduledJobs extends GlobalSettings {
   def scheduler(app: Application): Scheduler = Akka.system(app).scheduler
   val scheduledJobs: Seq[ScheduledJob]
 
-  private[scheduling] var cancellables : Seq[Cancellable] = Seq.empty
+  private[scheduling] var cancellables: Seq[Cancellable] = Seq.empty
 
   override def onStart(app: Application) {
     super.onStart(app)
@@ -59,7 +59,7 @@ trait RunningOfScheduledJobs extends GlobalSettings {
     cancellables.foreach(_.cancel())
     scheduledJobs.foreach { job =>
       Logger.info(s"Checking if job ${job.configKey} is running")
-      while(Await.result(job.isRunning, 5.seconds)) {
+      while (Await.result(job.isRunning, 5.seconds)) {
         Logger.warn(s"Waiting for job ${job.configKey} to finish")
         Thread.sleep(1000)
       }

@@ -28,9 +28,9 @@ trait ScheduledJob {
 
   def configKey: String = name
 
-  def initialDelay:FiniteDuration
+  def initialDelay: FiniteDuration
 
-  def interval:FiniteDuration
+  def interval: FiniteDuration
 
   override def toString() = s"$name after $initialDelay every $interval"
 }

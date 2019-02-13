@@ -29,8 +29,8 @@ trait LockedScheduledJob extends ScheduledJob {
   val lockRepository: LockRepository
 
   lazy val lockKeeper = new LockKeeper {
-    val repo = lockRepository
-    val lockId = s"$name-scheduled-job-lock"
+    val repo                            = lockRepository
+    val lockId                          = s"$name-scheduled-job-lock"
     val forceLockReleaseAfter: Duration = releaseLockAfter
   }
 
@@ -39,9 +39,9 @@ trait LockedScheduledJob extends ScheduledJob {
   final def execute(implicit ec: ExecutionContext): Future[Result] =
     lockKeeper.tryLock {
       executeInLock
-    } map { 
+    } map {
       case Some(Result(msg)) => Result(s"Job with $name run and completed with result $msg")
-      case None => Result(s"Job with $name cannot aquire mongo lock, not running")
+      case None              => Result(s"Job with $name cannot aquire mongo lock, not running")
     }
 
 }
