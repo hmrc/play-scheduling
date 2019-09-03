@@ -75,8 +75,8 @@ class LockedScheduledJobSpec
     "let job run in sequence" in {
       val job = new SimpleJob("job1")
       job.continueExecution()
-      Await.result(job.execute, 1.second).message shouldBe "Job with job1 run and completed with result 1"
-      Await.result(job.execute, 1.second).message shouldBe "Job with job1 run and completed with result 2"
+      Await.result(job.execute, 1.minute).message shouldBe "Job with job1 run and completed with result 1"
+      Await.result(job.execute, 1.minute).message shouldBe "Job with job1 run and completed with result 2"
     }
 
     "not allow job to run in parallel" in {
