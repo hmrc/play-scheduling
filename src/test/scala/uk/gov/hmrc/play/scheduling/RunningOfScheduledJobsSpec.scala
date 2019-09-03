@@ -19,8 +19,10 @@ package uk.gov.hmrc.play.scheduling
 import akka.actor.{Cancellable, Scheduler}
 import org.scalatest.concurrent.Eventually
 import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.time.{Minute, Span}
 import play.api.Application
 import play.api.test.FakeApplication
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}
@@ -119,7 +121,7 @@ class RunningOfScheduledJobsSpec extends WordSpec with Matchers with Eventually 
 
       stopFuture should not be 'completed
       testScheduledJob.isRunning = Future.successful(false)
-      eventually { stopFuture should be('completed) }
+      eventually (timeout(Span(1, Minute))) { stopFuture should be('completed) }
     }
   }
 
