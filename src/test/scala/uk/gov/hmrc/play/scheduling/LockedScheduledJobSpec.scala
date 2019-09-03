@@ -16,19 +16,21 @@
 
 package uk.gov.hmrc.play.scheduling
 
-import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.{CountDownLatch, TimeUnit}
+import java.util.concurrent.atomic.AtomicInteger
+
 import org.joda.time.Duration
-import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{BeforeAndAfterEach, Matchers, WordSpec}
+import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play.guice.GuiceOneAppPerTest
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.modules.reactivemongo.MongoDbConnection
-import uk.gov.hmrc.lock.LockRepository
+import uk.gov.hmrc.lock.LockMongoRepository
+import uk.gov.hmrc.mongo.MongoSpecSupport
+
+import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.concurrent.ExecutionContext.Implicits._
 import scala.concurrent.duration._
-import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.util.Try
 
 class LockedScheduledJobSpec
@@ -36,6 +38,7 @@ class LockedScheduledJobSpec
     with Matchers
     with ScalaFutures
     with GuiceOneAppPerTest
+    with MongoSpecSupport
     with BeforeAndAfterEach {
 
   override def fakeApplication(): Application =
@@ -45,15 +48,13 @@ class LockedScheduledJobSpec
 
   class SimpleJob(val name: String) extends LockedScheduledJob {
 
-    protected lazy val mongoConnection = new MongoDbConnection {}
-    protected implicit lazy val db     = mongoConnection.db
-    override val releaseLockAfter      = new Duration(1000)
+    override val releaseLockAfter = new Duration(1000)
 
     val start = new CountDownLatch(1)
 
-    val lockRepository = new LockRepository()
+    val lockRepository = LockMongoRepository(mongo)
 
-    def continueExecution() = start.countDown()
+    def continueExecution(): Unit = start.countDown()
 
     val executionCount = new AtomicInteger(0)
 
@@ -61,7 +62,7 @@ class LockedScheduledJobSpec
 
     override def executeInLock(implicit ec: ExecutionContext): Future[Result] =
       Future {
-        start.await()
+        start.await(1, TimeUnit.MINUTES)
         Result(executionCount.incrementAndGet().toString)
       }
 
