@@ -16,13 +16,15 @@
 
 package uk.gov.hmrc.play.scheduling
 
-import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.{CountDownLatch, TimeUnit}
-import org.scalatest.concurrent.ScalaFutures
+import java.util.concurrent.atomic.AtomicInteger
+
 import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.concurrent.ScalaFutures
+
+import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.ExecutionContext.Implicits._
 import scala.concurrent.duration.FiniteDuration
-import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
 
 class ExclusiveScheduledJobSpec extends WordSpec with Matchers with ScalaFutures {
@@ -39,15 +41,15 @@ class ExclusiveScheduledJobSpec extends WordSpec with Matchers with ScalaFutures
 
     override def executeInMutex(implicit ec: ExecutionContext): Future[Result] =
       Future {
-        start.await()
+        start.await(1, TimeUnit.MINUTES)
         Result(executionCount.incrementAndGet().toString)
       }
 
     override def name = "simpleJob"
 
-    override def initialDelay = FiniteDuration(1, TimeUnit.SECONDS)
+    override def initialDelay = FiniteDuration(1, TimeUnit.MINUTES)
 
-    override def interval = FiniteDuration(1, TimeUnit.SECONDS)
+    override def interval = FiniteDuration(1, TimeUnit.MINUTES)
   }
 
   "ExclusiveScheduledJob" should {
