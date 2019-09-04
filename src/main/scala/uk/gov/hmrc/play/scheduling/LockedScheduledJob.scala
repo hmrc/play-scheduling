@@ -29,9 +29,9 @@ trait LockedScheduledJob extends ScheduledJob {
   val lockRepository: LockRepository
 
   lazy val lockKeeper = new LockKeeper {
-    val repo                            = lockRepository
-    val lockId                          = s"$name-scheduled-job-lock"
-    val forceLockReleaseAfter: Duration = releaseLockAfter
+    override def repo: LockRepository = lockRepository
+    override def lockId: String  = s"$name-scheduled-job-lock"
+    override val forceLockReleaseAfter: Duration = releaseLockAfter
   }
 
   def isRunning: Future[Boolean] = lockKeeper.isLocked
