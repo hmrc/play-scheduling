@@ -22,6 +22,7 @@ import java.util.concurrent.atomic.AtomicInteger
 import org.joda.time.Duration
 import org.scalatest.{BeforeAndAfterEach, Matchers, WordSpec}
 import org.scalatest.concurrent.ScalaFutures
+import org.scalatest.time.{Millis, Seconds, Span}
 import org.scalatestplus.play.guice.GuiceOneAppPerTest
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
@@ -46,9 +47,11 @@ class LockedScheduledJobSpec
       .configure("mongodb.uri" -> "mongodb://localhost:27017/test-play-schedule")
       .build()
 
+  override implicit def patienceConfig: PatienceConfig = PatienceConfig(timeout = Span(500, Millis), interval = Span(500, Millis))
+
   class SimpleJob(val name: String) extends LockedScheduledJob {
 
-    override val releaseLockAfter = new Duration(1000)
+    override val releaseLockAfter = new Duration(5000)
 
     val start = new CountDownLatch(1)
 
@@ -69,6 +72,7 @@ class LockedScheduledJobSpec
     override def initialDelay = FiniteDuration(1, TimeUnit.SECONDS)
 
     override def interval = FiniteDuration(1, TimeUnit.SECONDS)
+
   }
 
   "ExclusiveScheduledJob" should {
@@ -104,4 +108,5 @@ class LockedScheduledJobSpec
       job.isRunning.futureValue shouldBe false
     }
   }
+
 }
