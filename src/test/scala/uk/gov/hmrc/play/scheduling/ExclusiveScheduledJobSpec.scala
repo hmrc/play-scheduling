@@ -21,6 +21,7 @@ import java.util.concurrent.atomic.AtomicInteger
 
 import org.scalatest.{Matchers, WordSpec}
 import org.scalatest.concurrent.ScalaFutures
+import org.scalatest.time.{Millis, Seconds, Span}
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.ExecutionContext.Implicits._
@@ -28,6 +29,8 @@ import scala.concurrent.duration.FiniteDuration
 import scala.util.Try
 
 class ExclusiveScheduledJobSpec extends WordSpec with Matchers with ScalaFutures {
+
+  override implicit def patienceConfig: PatienceConfig = PatienceConfig(timeout = Span(5, Seconds), interval = Span(500, Millis))
 
   class SimpleJob extends ExclusiveScheduledJob {
 
