@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.play.scheduling
 
-import java.util.concurrent.{CountDownLatch, TimeUnit}
+import java.util.concurrent.{CountDownLatch, Executors, TimeUnit}
 import java.util.concurrent.atomic.AtomicInteger
 
 import org.joda.time.Duration
@@ -67,7 +67,7 @@ class LockedScheduledJobSpec
       Future {
         start.await(1, TimeUnit.MINUTES)
         Result(executionCount.incrementAndGet().toString)
-      }
+      }(ExecutionContext.fromExecutor(Executors.newFixedThreadPool(5)))
 
     override def initialDelay = FiniteDuration(1, TimeUnit.SECONDS)
 
