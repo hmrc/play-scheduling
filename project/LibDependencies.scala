@@ -21,7 +21,7 @@ object LibDependencies {
   def apply(): Seq[ModuleID] = compile ++ test
 
   private val play25Version = "2.5.19"
-  private val play26Version = "2.6.23"
+  private val play26Version = "2.6.20"
 
   private val compile: Seq[ModuleID] = PlayCrossCompilation.dependencies(
     shared = Seq(
@@ -30,11 +30,11 @@ object LibDependencies {
       "org.apache.commons"  % "commons-lang3" % "3.4"
     ),
     play25 = Seq(
-      "uk.gov.hmrc"         %% "mongo-lock"   % "6.15.0-play-25",
+      "uk.gov.hmrc"         %% "mongo-lock"   % "6.17.0-play-25",
       "com.typesafe.play"   %% "play"         % play25Version     % Provided
     ),
     play26 = Seq(
-      "uk.gov.hmrc"         %% "mongo-lock"   % "6.15.0-play-26",
+      "uk.gov.hmrc"         %% "mongo-lock"   % "6.17.0-play-26",
       "com.typesafe.play"   %% "play"         % play26Version     % Provided
     )
   )
