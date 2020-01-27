@@ -30,11 +30,11 @@ object LibDependencies {
       "org.apache.commons"  % "commons-lang3" % "3.4"
     ),
     play25 = Seq(
-      "uk.gov.hmrc"         %% "mongo-lock"   % "6.17.0-play-25",
+      "uk.gov.hmrc"         %% "mongo-lock"   % "6.18.0-play-25",
       "com.typesafe.play"   %% "play"         % play25Version     % Provided
     ),
     play26 = Seq(
-      "uk.gov.hmrc"         %% "mongo-lock"   % "6.17.0-play-26",
+      "uk.gov.hmrc"         %% "mongo-lock"   % "6.18.0-play-26",
       "com.typesafe.play"   %% "play"         % play26Version     % Provided
     )
   )
@@ -49,11 +49,11 @@ object LibDependencies {
     ),
     play25 = Seq(
       "org.scalatestplus.play"  %% "scalatestplus-play" % "2.0.1"   % Test,
-      "uk.gov.hmrc" %%  "reactivemongo-test"  % "4.15.0-play-25"  % Test
+      "uk.gov.hmrc" %%  "reactivemongo-test"  % "4.16.0-play-25"  % Test
     ),
     play26 = Seq(
       "org.scalatestplus.play"  %% "scalatestplus-play" % "3.1.2"   % Test,
-      "uk.gov.hmrc" %%  "reactivemongo-test"  % "4.15.0-play-26"  % Test
+      "uk.gov.hmrc" %%  "reactivemongo-test"  % "4.16.0-play-26"  % Test
     )
   )
 
