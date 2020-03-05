@@ -73,6 +73,7 @@ class RunningOfScheduledJobsSpec extends WordSpec with Matchers with Eventually 
           executed = true
           Future.successful(this.Result("done"))
         }
+        override def isExecuted: Boolean = executed
       }
       new RunningOfScheduledJobs {
         override lazy val ec: ExecutionContext = ExecutionContext.Implicits.global
@@ -92,9 +93,9 @@ class RunningOfScheduledJobsSpec extends WordSpec with Matchers with Eventually 
         override lazy val application: Application = testApp
       }
 
-      testScheduledJob should not be 'executed
+      testScheduledJob.isExecuted should be(false)
       capturedRunnable.run()
-      testScheduledJob should be ('executed)
+      testScheduledJob.isExecuted should be(true)
     }
   }
 
@@ -153,6 +154,7 @@ class RunningOfScheduledJobsSpec extends WordSpec with Matchers with Eventually 
       override lazy val initialDelay: FiniteDuration = 2.seconds
       override lazy val interval: FiniteDuration = 3.seconds
       def name: String = "TestScheduledJob"
+      def isExecuted: Boolean = true
 
       def execute(implicit ec: ExecutionContext): Future[Result] = Future.successful(Result("done"))
       var isRunning: Future[Boolean] = Future.successful(false)

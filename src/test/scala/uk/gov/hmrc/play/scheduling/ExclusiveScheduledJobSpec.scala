@@ -24,7 +24,6 @@ import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.time.{Millis, Seconds, Span}
 
 import scala.concurrent.{ExecutionContext, Future}
-import scala.concurrent.ExecutionContext.Implicits._
 import scala.concurrent.duration.FiniteDuration
 import scala.util.Try
 
@@ -56,6 +55,8 @@ class ExclusiveScheduledJobSpec extends WordSpec with Matchers with ScalaFutures
   }
 
   "ExclusiveScheduledJob" should {
+    import scala.concurrent.ExecutionContext.Implicits.global
+
     "let job run in sequence" in {
       val job = new SimpleJob
       job.continueExecution()
