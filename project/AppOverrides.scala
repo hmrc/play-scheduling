@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import LibDependencies.compile
 import sbt._
 
 object AppOverrides {
