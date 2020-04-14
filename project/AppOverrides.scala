@@ -14,18 +14,17 @@
  * limitations under the License.
  */
 
-import LibDependencies.compile
 import sbt._
 
 object AppOverrides {
 
-  def apply(): Set[ModuleID] = overrides
+  def apply(): Seq[ModuleID] = overrides
 
   // we need to override the akka version for now as newer versions are not compatible with reactivemongo
   lazy val akkaVersion = "2.5.23"
   lazy val akkaHttpVersion = "10.0.15"
 
-  val overrides: Set[ModuleID] = Set(
+  val overrides: Seq[ModuleID] = Seq(
     "com.typesafe.akka" %% "akka-stream" % akkaVersion,
     "com.typesafe.akka" %% "akka-protobuf" % akkaVersion,
     "com.typesafe.akka" %% "akka-slf4j" % akkaVersion,
