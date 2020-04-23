@@ -7,5 +7,5 @@ Helpers for scheduling jobs from Play framework on the Tax Platform
 ## Play 2.5
 A given function can be run periodically in the background by mixing in the ```RunningOfScheduledJobs```  trait to the service's ```Global```
 
-## Play 2.6
+## Play 2.6 and Play 2.7
 A given function can be run periodically in the background by mixing in the ```RunningOfScheduledJobs``` trait with a singleton class created using dependency injection.
