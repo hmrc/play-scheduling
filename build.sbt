@@ -49,8 +49,7 @@ lazy val playSchedulingPlay25 = Project("play-scheduling-play-25", file("play-sc
     unmanagedSourceDirectories in Compile += (playSchedulingCommon / Compile / scalaSource).value,
     unmanagedSourceDirectories in Test += (playSchedulingCommon / Test / scalaSource).value,
     scalaVersion := scala2_11,
-    libraryDependencies ++= AppDependencies.compileCommon ++ AppDependencies.compilePlay25 ++ AppDependencies.testCommon ++ AppDependencies.testPlay25,
-    dependencyOverrides ++= AppOverrides.overrides
+    libraryDependencies ++= AppDependencies.compileCommon ++ AppDependencies.compilePlay25 ++ AppDependencies.testCommon ++ AppDependencies.testPlay25
   )
 
 lazy val playSchedulingPlay26 = Project("play-scheduling-play-26", file("play-scheduling-play-26"))
@@ -60,8 +59,7 @@ lazy val playSchedulingPlay26 = Project("play-scheduling-play-26", file("play-sc
     unmanagedSourceDirectories in Compile += (playSchedulingCommon / Compile / scalaSource).value,
     unmanagedSourceDirectories in Test += (playSchedulingCommon / Test / scalaSource).value,
     crossScalaVersions := Seq(scala2_11, scala2_12),
-    libraryDependencies ++= AppDependencies.compileCommon ++ AppDependencies.compilePlay26 ++ AppDependencies.testCommon ++ AppDependencies.testPlay26,
-    dependencyOverrides ++= AppOverrides.overrides
+    libraryDependencies ++= AppDependencies.compileCommon ++ AppDependencies.compilePlay26 ++ AppDependencies.testCommon ++ AppDependencies.testPlay26
   )
 
 lazy val playSchedulingPlay27 = Project("play-scheduling-play-27", file("play-scheduling-play-27"))
