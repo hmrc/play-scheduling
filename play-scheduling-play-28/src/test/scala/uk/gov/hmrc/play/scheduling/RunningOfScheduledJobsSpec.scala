@@ -17,9 +17,10 @@
 package uk.gov.hmrc.play.scheduling
 
 import akka.actor.{Cancellable, Scheduler}
+import org.scalatest.WordSpec
 import org.scalatest.concurrent.Eventually
-import org.scalatest.time.{Seconds, Minute, Span}
-import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.time.{Minute, Seconds, Span}
+import org.scalatest.matchers.should.Matchers
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerTest
 import play.api.Application

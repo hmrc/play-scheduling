@@ -19,17 +19,18 @@ package uk.gov.hmrc.play.scheduling
 import akka.actor.{Cancellable, Scheduler}
 import org.apache.commons.lang3.time.StopWatch
 import play.api.inject.ApplicationLifecycle
-import play.api.{Application, Logger}
+import play.api.{Application, Logging}
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.util.{Failure, Success}
 
 
+
 /**
  * All implementing classes must be singletons - see https://www.playframework.com/documentation/2.6.x/ScalaDependencyInjection#Stopping/cleaning-up
  */
-trait RunningOfScheduledJobs {
+trait RunningOfScheduledJobs extends Logging {
 
   implicit val ec: ExecutionContext
 
@@ -47,29 +48,29 @@ trait RunningOfScheduledJobs {
     scheduler.schedule(job.initialDelay, job.interval) {
       val stopWatch = new StopWatch
       stopWatch.start()
-      Logger.info(s"Executing job ${job.name}")
+      logger.info(s"Executing job ${job.name}")
 
       job.execute.onComplete {
         case Success(job.Result(message)) =>
           stopWatch.stop()
-          Logger.info(s"Completed job ${job.name} in $stopWatch: $message")
+          logger.info(s"Completed job ${job.name} in $stopWatch: $message")
         case Failure(throwable) =>
           stopWatch.stop()
-          Logger.error(s"Exception running job ${job.name} after $stopWatch", throwable)
+          logger.error(s"Exception running job ${job.name} after $stopWatch", throwable)
       }
     }
   }
 
   applicationLifecycle.addStopHook{ () =>
-    Logger.info(s"Cancelling all scheduled jobs.")
+    logger.info(s"Cancelling all scheduled jobs.")
     cancellables.foreach(_.cancel())
     scheduledJobs.foreach { job =>
-      Logger.info(s"Checking if job ${job.configKey} is running")
+      logger.info(s"Checking if job ${job.configKey} is running")
       while (Await.result(job.isRunning, 5.seconds)) {
-        Logger.warn(s"Waiting for job ${job.configKey} to finish")
+        logger.warn(s"Waiting for job ${job.configKey} to finish")
         Thread.sleep(1000)
       }
-      Logger.warn(s"Job ${job.configKey} is finished")
+      logger.warn(s"Job ${job.configKey} is finished")
     }
     Future.successful()
 
