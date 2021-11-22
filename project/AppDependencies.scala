@@ -64,6 +64,6 @@ object AppDependencies {
   val testPlay28: Seq[ModuleID] = Seq(
     "org.scalatestplus.play" %% "scalatestplus-play" % "5.1.0"         % Test,
     "uk.gov.hmrc"            %% "reactivemongo-test" % "5.0.0-play-28" % Test,
-    "com.vladsch.flexmark"         % "flexmark-all"              % "0.36.8"            % Test
+    "com.vladsch.flexmark"   % "flexmark-all"        % "0.36.8"        % Test
   )
 }
