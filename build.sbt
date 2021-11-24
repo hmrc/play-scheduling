@@ -28,7 +28,6 @@ lazy val library = (project in file("."))
   .settings(
     commonSettings,
     publish := {},
-    publishAndDistribute := {},
     crossScalaVersions := Seq.empty
   )
   .aggregate(
