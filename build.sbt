@@ -30,6 +30,7 @@ lazy val library = (project in file("."))
     publish := {},
     crossScalaVersions := Seq.empty
   )
+  .settings(ScoverageSettings())
   .aggregate(
     playSchedulingPlay26,
     playSchedulingPlay27,
@@ -43,6 +44,7 @@ lazy val playSchedulingCommon = Project("play-scheduling-common", file("play-sch
     scalaVersion := scala2_12,
     libraryDependencies ++= AppDependencies.compileCommon ++ AppDependencies.testCommon
   )
+  .settings(ScoverageSettings())
 
 lazy val playSchedulingPlay26 = Project("play-scheduling-play-26", file("play-scheduling-play-26"))
   .enablePlugins(SbtAutoBuildPlugin, SbtArtifactory)
