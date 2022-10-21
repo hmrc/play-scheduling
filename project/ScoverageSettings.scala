@@ -1,3 +1,4 @@
+
 /*
  * Copyright 2022 HM Revenue & Customs
  *
@@ -14,22 +15,17 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.play.scheduling
+import sbt.Keys.parallelExecution
+import sbt._
+import scoverage.ScoverageKeys
 
-import scala.concurrent.{ExecutionContext, Future}
-import scala.concurrent.duration.FiniteDuration
-
-trait ScheduledJob {
-  def name: String
-  def execute(implicit ec: ExecutionContext): Future[Result]
-
-  case class Result(message: String)
-
-  def configKey: String = name
-
-  def initialDelay: FiniteDuration
-
-  def interval: FiniteDuration
-
-  override def toString() = s"$name after $initialDelay every $interval"
+object ScoverageSettings {
+  def apply(): Seq[Def.Setting[_ >: String with Double with Boolean]] =
+    Seq( // Semicolon-separated list of regexes matching classes to exclude
+      ScoverageKeys.coverageExcludedPackages := "<empty>;.*Reverse.*;.*(config|testonly).*;.*(BuildInfo|Routes).*",
+      ScoverageKeys.coverageMinimumStmtTotal := 33.80,
+      ScoverageKeys.coverageFailOnMinimum := true,
+      ScoverageKeys.coverageHighlighting := true,
+      parallelExecution in ConfigKey.configurationToKey(Test) := false
+    )
 }

@@ -23,47 +23,28 @@ object AppDependencies {
   private val play28Version = "2.8.8"
 
   val compileCommon: Seq[ModuleID] = Seq(
+    "uk.gov.hmrc.mongo" %% "hmrc-mongo-play-28" % "0.73.0",
     "joda-time"          % "joda-time"     % "2.10.1",
     "org.apache.commons" % "commons-lang3" % "3.4"
   )
 
-  val compilePlay26: Seq[ModuleID] = Seq(
-    "com.typesafe.akka" %% "akka-actor" % "2.4.20",
-    "uk.gov.hmrc"       %% "mongo-lock" % "7.0.0-play-26",
-    "com.typesafe.play" %% "play"       % play26Version
-  )
-
-  val compilePlay27: Seq[ModuleID] = Seq(
-    "uk.gov.hmrc"       %% "mongo-lock" % "7.0.0-play-27",
-    "com.typesafe.play" %% "play"       % play27Version
-  )
-
   val compilePlay28: Seq[ModuleID] = Seq(
-    "uk.gov.hmrc"       %% "mongo-lock" % "7.0.0-play-28",
+    "uk.gov.hmrc.mongo" %% "hmrc-mongo-play-28" % "0.73.0",
     "com.typesafe.play" %% "play"       % play28Version
   )
 
   val testCommon: Seq[ModuleID] = Seq(
-    "org.scalatest"     %% "scalatest"      % "3.0.7"   % Test,
+    "uk.gov.hmrc.mongo" %% "hmrc-mongo-test-play-28" % "0.73.0" % Test,
+    "org.scalatest"     %% "scalatest"          % "3.0.7"  % Test,
     "org.pegdown"       % "pegdown"         % "1.6.0"   % Test,
     "ch.qos.logback"    % "logback-classic" % "1.2.3"   % Test,
     "org.mockito"       % "mockito-core"    % "3.9.0"   % Test,
     "org.scalatestplus" %% "mockito-3-4"    % "3.2.8.0" % Test
   )
 
-  val testPlay26: Seq[ModuleID] = Seq(
-    "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2"         % Test,
-    "uk.gov.hmrc"            %% "reactivemongo-test" % "5.0.0-play-26" % Test
-  )
-
-  val testPlay27: Seq[ModuleID] = Seq(
-    "org.scalatestplus.play" %% "scalatestplus-play" % "4.0.0"         % Test,
-    "uk.gov.hmrc"            %% "reactivemongo-test" % "5.0.0-play-27" % Test
-  )
-
   val testPlay28: Seq[ModuleID] = Seq(
-    "org.scalatestplus.play" %% "scalatestplus-play" % "5.1.0"         % Test,
-    "uk.gov.hmrc"            %% "reactivemongo-test" % "5.0.0-play-28" % Test,
-    "com.vladsch.flexmark"   % "flexmark-all"        % "0.36.8"        % Test
+    "uk.gov.hmrc.mongo"      %% "hmrc-mongo-test-play-28" % "0.73.0"  % Test,
+    "org.scalatestplus.play" %% "scalatestplus-play" % "5.1.0"   % Test,
+    "com.vladsch.flexmark"   % "flexmark-all"        % "0.36.8"  % Test
   )
 }

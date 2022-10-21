@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,10 @@
 
 package uk.gov.hmrc.play.scheduling
 
-import org.joda.time.Duration
-import uk.gov.hmrc.lock.{LockKeeper, LockRepository}
-import scala.concurrent.{ExecutionContext, Future}
+import uk.gov.hmrc.mongo.lock.{LockRepository, LockService}
+
+import scala.concurrent.duration.Duration
+import scala.concurrent.{ExecutionContext, Future, duration}
 
 trait LockedScheduledJob extends ScheduledJob {
 
@@ -26,18 +27,16 @@ trait LockedScheduledJob extends ScheduledJob {
 
   val releaseLockAfter: Duration
 
-  val lockRepository: LockRepository
+  val lockRepo: LockRepository
 
-  lazy val lockKeeper = new LockKeeper {
-    override def repo: LockRepository = lockRepository
-    override def lockId: String  = s"$name-scheduled-job-lock"
-    override val forceLockReleaseAfter: Duration = releaseLockAfter
+  lazy val lockKeeper: LockService = new LockService {
+    override val lockRepository: LockRepository = lockRepo
+    override val lockId: String = s"$name-scheduled-job-lock"
+    override val ttl: duration.Duration = releaseLockAfter
   }
-
-  def isRunning: Future[Boolean] = lockKeeper.isLocked
-
+  
   final def execute(implicit ec: ExecutionContext): Future[Result] =
-    lockKeeper.tryLock {
+    lockKeeper.withLock {
       executeInLock
     } map {
       case Some(Result(msg)) => Result(s"Job with $name run and completed with result $msg")

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,20 +17,19 @@
 package uk.gov.hmrc.play.scheduling
 
 import akka.actor.{Cancellable, Scheduler}
-import org.scalatest.WordSpec
+import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.concurrent.Eventually
-import org.scalatest.time.{Minute, Seconds, Span}
+import org.scalatest.time.{Minute, Span}
 import org.scalatest.matchers.should.Matchers
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerTest
 import play.api.Application
 import play.api.inject.ApplicationLifecycle
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}
 
-class RunningOfScheduledJobsSpec extends WordSpec with Matchers with Eventually with MockitoSugar with GuiceOneAppPerTest {
+class RunningOfScheduledJobsSpec extends AnyWordSpec with Matchers with Eventually with MockitoSugar with GuiceOneAppPerTest {
 
   override implicit val patienceConfig: PatienceConfig =
     PatienceConfig(timeout = 5.seconds)
@@ -43,7 +42,7 @@ class RunningOfScheduledJobsSpec extends WordSpec with Matchers with Eventually 
         var interval: FiniteDuration     = _
       }
       private val testApp = fakeApplication()
-      val runner = new RunningOfScheduledJobs {
+      new RunningOfScheduledJobs {
         override lazy val ec: ExecutionContext = ExecutionContext.Implicits.global
         override lazy val applicationLifecycle: ApplicationLifecycle = testApp.injector.instanceOf[ApplicationLifecycle]
         override lazy val scheduledJobs: Seq[ScheduledJob] = Seq(testScheduledJob)
@@ -124,7 +123,7 @@ class RunningOfScheduledJobsSpec extends WordSpec with Matchers with Eventually 
       val stoppableJob = new TestScheduledJob() {
         override def name: String = "StoppableJob"
       }
-      private val runner = new RunningOfScheduledJobs {
+      new RunningOfScheduledJobs {
         override lazy val ec: ExecutionContext = ExecutionContext.Implicits.global
         override lazy val applicationLifecycle: ApplicationLifecycle = testApp.injector.instanceOf[ApplicationLifecycle]
         override lazy val scheduledJobs: Seq[ScheduledJob] = Seq(stoppableJob)
