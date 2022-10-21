@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,16 +18,17 @@ package uk.gov.hmrc.play.scheduling
 
 import java.util.concurrent.{CountDownLatch, Executors, TimeUnit}
 import java.util.concurrent.atomic.AtomicInteger
-
-import org.joda.time.Duration
-import org.scalatest.{BeforeAndAfterEach, Matchers, WordSpec}
+import org.scalatest.BeforeAndAfterAll
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.time.{Millis, Seconds, Span}
+import org.scalatest.time.{Millis, Span}
 import org.scalatestplus.play.guice.GuiceOneAppPerTest
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
-import uk.gov.hmrc.lock.LockMongoRepository
-import uk.gov.hmrc.mongo.MongoSpecSupport
+import uk.gov.hmrc.mongo.lock.MongoLockRepository
+import uk.gov.hmrc.mongo.lock.LockRepository
+import uk.gov.hmrc.mongo.{CurrentTimestampSupport, MongoComponent}
 
 import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.concurrent.ExecutionContext.Implicits._
@@ -35,27 +36,30 @@ import scala.concurrent.duration._
 import scala.util.Try
 
 class LockedScheduledJobSpec
-    extends WordSpec
+    extends AnyWordSpec
     with Matchers
     with ScalaFutures
     with GuiceOneAppPerTest
-    with MongoSpecSupport
-    with BeforeAndAfterEach {
+    with BeforeAndAfterAll {
 
   override def fakeApplication(): Application =
     new GuiceApplicationBuilder()
       .configure("mongodb.uri" -> "mongodb://localhost:27017/test-play-schedule")
       .build()
 
+  val mongoComponent: MongoComponent = MongoComponent("mongodb://localhost:27017/test-play-schedule")
+
   override implicit def patienceConfig: PatienceConfig = PatienceConfig(timeout = Span(500, Millis), interval = Span(500, Millis))
 
   class SimpleJob(val name: String) extends LockedScheduledJob {
 
-    override val releaseLockAfter = new Duration(5000)
+    override val releaseLockAfter: Duration = Duration(5, TimeUnit.SECONDS)
 
     val start = new CountDownLatch(1)
 
-    val lockRepository = LockMongoRepository(mongo)
+    override val lockRepo: LockRepository = new MongoLockRepository(
+      mongoComponent,
+      new CurrentTimestampSupport())
 
     def continueExecution(): Unit = start.countDown()
 
@@ -69,10 +73,15 @@ class LockedScheduledJobSpec
         Result(executionCount.incrementAndGet().toString)
       }(ExecutionContext.fromExecutor(Executors.newFixedThreadPool(5)))
 
-    override def initialDelay = FiniteDuration(1, TimeUnit.SECONDS)
+    override def initialDelay: FiniteDuration = FiniteDuration(1, TimeUnit.SECONDS)
 
-    override def interval = FiniteDuration(1, TimeUnit.SECONDS)
+    override def interval: FiniteDuration = FiniteDuration(1, TimeUnit.SECONDS)
 
+  }
+
+  override def afterAll(): Unit = {
+    // shutdown mongo system
+    mongoComponent.client.close()
   }
 
   "ExclusiveScheduledJob" should {
@@ -89,13 +98,9 @@ class LockedScheduledJobSpec
 
       val pausedExecution = job.execute
       pausedExecution.isCompleted     shouldBe false
-      job.isRunning.futureValue       shouldBe true
       job.execute.futureValue.message shouldBe "Job with job2 cannot aquire mongo lock, not running"
-      job.isRunning.futureValue       shouldBe true
-
       job.continueExecution()
       pausedExecution.futureValue.message shouldBe "Job with job2 run and completed with result 1"
-      job.isRunning.futureValue           shouldBe false
     }
 
     "should tolerate exceptions in execution" in {
@@ -103,9 +108,9 @@ class LockedScheduledJobSpec
         override def executeInLock(implicit ec: ExecutionContext): Future[Result] = throw new RuntimeException
       }
 
-      Try(job.execute.futureValue)
-
-      job.isRunning.futureValue shouldBe false
+      Try {
+        job.execute.futureValue
+      }.isFailure shouldBe true
     }
   }
 

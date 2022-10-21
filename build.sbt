@@ -32,8 +32,6 @@ lazy val library = (project in file("."))
   )
   .settings(ScoverageSettings())
   .aggregate(
-    playSchedulingPlay26,
-    playSchedulingPlay27,
     playSchedulingPlay28
   ).disablePlugins(sbt.plugins.JUnitXmlReportPlugin)
 
@@ -45,27 +43,6 @@ lazy val playSchedulingCommon = Project("play-scheduling-common", file("play-sch
     libraryDependencies ++= AppDependencies.compileCommon ++ AppDependencies.testCommon
   )
   .settings(ScoverageSettings())
-
-lazy val playSchedulingPlay26 = Project("play-scheduling-play-26", file("play-scheduling-play-26"))
-  .enablePlugins(SbtAutoBuildPlugin, SbtArtifactory)
-  .settings(
-    commonSettings,
-    unmanagedSourceDirectories in Compile += (playSchedulingCommon / Compile / scalaSource).value,
-    unmanagedSourceDirectories in Test += (playSchedulingCommon / Test / scalaSource).value,
-    scalaVersion := scala2_12,
-    libraryDependencies ++= AppDependencies.compileCommon ++ AppDependencies.compilePlay26 ++ AppDependencies.testCommon ++ AppDependencies.testPlay26
-  )
-
-lazy val playSchedulingPlay27 = Project("play-scheduling-play-27", file("play-scheduling-play-27"))
-  .enablePlugins(SbtAutoBuildPlugin, SbtArtifactory)
-  .settings(
-    commonSettings,
-    unmanagedSourceDirectories in Compile += (playSchedulingCommon / Compile / scalaSource).value,
-    unmanagedSourceDirectories in Test += (playSchedulingCommon / Test / scalaSource).value,
-    scalaSource in Compile := (playSchedulingPlay26 / Compile / scalaSource).value,
-    scalaVersion := scala2_12,
-    libraryDependencies ++= AppDependencies.compileCommon ++ AppDependencies.compilePlay27 ++ AppDependencies.testCommon ++ AppDependencies.testPlay27
-  )
 
 lazy val playSchedulingPlay28 = Project("play-scheduling-play-28", file("play-scheduling-play-28"))
   .enablePlugins(SbtAutoBuildPlugin, SbtArtifactory)
