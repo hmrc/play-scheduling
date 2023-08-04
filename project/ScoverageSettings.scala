@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2022 HM Revenue & Customs
  *
@@ -26,6 +25,6 @@ object ScoverageSettings {
       ScoverageKeys.coverageMinimumStmtTotal := 33.80,
       ScoverageKeys.coverageFailOnMinimum := true,
       ScoverageKeys.coverageHighlighting := true,
-      parallelExecution in ConfigKey.configurationToKey(Test) := false
+      (Test / parallelExecution) := false
     )
 }
