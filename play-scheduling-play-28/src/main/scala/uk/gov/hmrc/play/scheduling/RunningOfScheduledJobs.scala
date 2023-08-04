@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,8 +25,8 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success}
 
 /**
- * All implementing classes must be singletons - see https://www.playframework.com/documentation/2.6.x/ScalaDependencyInjection#Stopping/cleaning-up
- */
+  * All implementing classes must be singletons - see https://www.playframework.com/documentation/2.6.x/ScalaDependencyInjection#Stopping/cleaning-up
+  */
 trait RunningOfScheduledJobs extends Logging {
 
   implicit val ec: ExecutionContext
@@ -42,23 +42,27 @@ trait RunningOfScheduledJobs extends Logging {
   private[scheduling] var cancellables: Seq[Cancellable] = Seq.empty
 
   cancellables = scheduledJobs.map { job =>
-    scheduler.schedule(job.initialDelay, job.interval) {
-      val stopWatch = new StopWatch
-      stopWatch.start()
-      logger.info(s"Executing job ${job.name}")
+    scheduler.scheduleAtFixedRate(job.initialDelay, job.interval)(
+      new Runnable {
+        override def run(): Unit = {
+          val stopWatch = new StopWatch
+          stopWatch.start()
+          logger.info(s"Executing job ${job.name}")
 
-      job.execute.onComplete {
-        case Success(job.Result(message)) =>
-          stopWatch.stop()
-          logger.info(s"Completed job ${job.name} in $stopWatch: $message")
-        case Failure(throwable) =>
-          stopWatch.stop()
-          logger.error(s"Exception running job ${job.name} after $stopWatch", throwable)
+          job.execute.onComplete {
+            case Success(job.Result(message)) =>
+              stopWatch.stop()
+              logger.info(s"Completed job ${job.name} in $stopWatch: $message")
+            case Failure(throwable) =>
+              stopWatch.stop()
+              logger.error(s"Exception running job ${job.name} after $stopWatch", throwable)
+          }
+        }
       }
-    }
+    )
   }
 
-  applicationLifecycle.addStopHook{ () =>
+  applicationLifecycle.addStopHook { () =>
     logger.info(s"Cancelling all scheduled jobs.")
     cancellables.foreach(_.cancel())
     Future.successful(())
