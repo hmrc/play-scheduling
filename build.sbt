@@ -8,19 +8,17 @@ val scala2_13 = "2.13.11"
 
 // Disable multiple project tests running at the same time: https://stackoverflow.com/questions/11899723/how-to-turn-off-parallel-execution-of-tests-for-multi-project-builds
 // TODO: restrict parallelExecution to tests only (the obvious way to do this using Test scope does not seem to work correctly)
-parallelExecution in Global := false
+(Global / parallelExecution) := false
 
 lazy val commonSettings = Seq(
   organization := "uk.gov.hmrc",
   majorVersion := 8,
-  makePublicallyAvailableOnBintray := true,
-  resolvers := Seq(
-    Resolver.bintrayRepo("hmrc", "releases"),
+  isPublicArtefact := true,
+  resolvers ++= Seq(
     Resolver.typesafeRepo("releases"),
     "HMRC-open-artefacts-maven" at "https://open.artefacts.tax.service.gov.uk/maven2",
     Resolver.url("HMRC-open-artefacts-ivy", url("https://open.artefacts.tax.service.gov.uk/ivy2"))(
-      Resolver.ivyStylePatterns),
-    "hmrc-releases" at "https://artefacts.tax.service.gov.uk/artifactory/hmrc-releases/"
+      Resolver.ivyStylePatterns)
   )
 )
 
