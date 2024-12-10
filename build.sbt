@@ -4,7 +4,7 @@ import sbt.{Resolver, _}
 val name = "play-scheduling"
 
 val scala2_12 = "2.12.13"
-val scala2_13 = "2.13.11"
+val scala2_13 = "2.13.12"
 
 // Disable multiple project tests running at the same time: https://stackoverflow.com/questions/11899723/how-to-turn-off-parallel-execution-of-tests-for-multi-project-builds
 // TODO: restrict parallelExecution to tests only (the obvious way to do this using Test scope does not seem to work correctly)
