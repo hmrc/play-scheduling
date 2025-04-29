@@ -23,7 +23,7 @@ Then run the tests and coverage report:
 
 `sbt clean coverage test coverageReport`
 
-If your build fails due to poor test coverage, *DO NOT* lower the test coverage threshold, instead inspect the generated report located here on your local repo: `/target/scala-2.12/scoverage-report/index.html`
+If your build fails due to poor test coverage, *DO NOT* lower the test coverage threshold, instead inspect the generated report located here on your local repo: `/target/scala-2.12/scoverage-report/index.html`.
 
 Then run the integration tests:
 

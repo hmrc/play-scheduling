@@ -1,2 +1,4 @@
 repoVisibility: public_0C3F0CE3E6E6448FAD341E7BFA50FCD333E06A20CFF05FCACE61154DDBBADF71
 description: Helpers for scheduling jobs from Play! on the Tax Platform
+deprecated: true
+end-of-life-date: 2025-04-29
